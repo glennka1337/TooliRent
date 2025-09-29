@@ -30,7 +30,7 @@ namespace TooliRent.Services.Services
             {
                 Username = dto.Username,
                 Password = hashed,
-                Role = dto.Role
+                Role = "Member"
             };
             await _users.AddAsync(user);
             return GenerateToken(user);
@@ -39,7 +39,7 @@ namespace TooliRent.Services.Services
         public async Task<AuthResultDto> LoginAsync(LoginDto dto)
         {
             var user = await _users.GetByUsernameAsync(dto.Username);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
+            if (user == null || !user.IsActive || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 throw new UnauthorizedAccessException("Invalid credentials.");
 
             return GenerateToken(user);
@@ -56,7 +56,7 @@ namespace TooliRent.Services.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("uid", user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role)
             };
 

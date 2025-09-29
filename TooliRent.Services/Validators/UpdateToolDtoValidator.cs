@@ -7,8 +7,12 @@ namespace TooliRent.Services.Validators
     {
         public UpdateToolDtoValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
-            RuleFor(x => x.CategoryId).GreaterThan(0);
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .MaximumLength(100);
+
+            RuleFor(x => x.CategoryId)
+                .GreaterThan(0);
         }
     }
 }

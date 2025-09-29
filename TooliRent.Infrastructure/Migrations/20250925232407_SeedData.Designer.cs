@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TooliRent.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using TooliRent.Infrastructure.Data;
 namespace TooliRent.Infrastructure.Migrations
 {
     [DbContext(typeof(TooliRentDbContext))]
-    partial class TooliRentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250925232407_SeedData")]
+    partial class SeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,9 +191,6 @@ namespace TooliRent.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -211,7 +211,6 @@ namespace TooliRent.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            IsActive = true,
                             Password = "$2a$10$LhTj3eQpC1Jp8wQvJfUeP.HO541xgs9LN7AyAcwzF2ioOs1Vh6xoG",
                             Role = "Admin",
                             Username = "admin"
@@ -219,7 +218,6 @@ namespace TooliRent.Infrastructure.Migrations
                         new
                         {
                             Id = 2,
-                            IsActive = true,
                             Password = "$2a$10$7stg7wY0IY5Q39I2nq3eIee5rT1Er9YXrVjuVjYIYAgq9rK2Vy6s.",
                             Role = "Member",
                             Username = "member"

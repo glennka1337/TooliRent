@@ -21,5 +21,14 @@ namespace TooliRent.Infrastructure.Repositories
             _ctx.Users.Add(user);
             await _ctx.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<User>> GetAllAsync() =>
+            await _ctx.Users.AsNoTracking().ToListAsync();
+
+        public async Task UpdateAsync(User user)
+        {
+            _ctx.Users.Update(user);
+            await _ctx.SaveChangesAsync();
+        }
     }
 }

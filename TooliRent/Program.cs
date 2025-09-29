@@ -52,7 +52,12 @@ namespace TooliRent
                 });
             });
 
-            builder.Services.AddAutoMapper(typeof(ToolProfile).Assembly);
+            builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<TooliRent.Services.Mapping.ToolProfile>();
+                cfg.AddProfile<TooliRent.Services.Mapping.BookingProfile>();
+            });
+
             builder.Services.AddValidatorsFromAssembly(typeof(CreateToolDtoValidator).Assembly);
             builder.Services.AddFluentValidationAutoValidation();
 
@@ -83,10 +88,13 @@ namespace TooliRent
             // Repositories
             builder.Services.AddScoped<IToolRepository, ToolRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
             // Services
             builder.Services.AddScoped<IToolService, ToolService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();
 
             var app = builder.Build();
 
@@ -94,12 +102,17 @@ namespace TooliRent
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                var mapperConfig = app.Services.GetRequiredService<AutoMapper.IConfigurationProvider>();
+                mapperConfig.AssertConfigurationIsValid();
             }
 
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseMiddleware<TooliRent.Middleware.ExceptionMiddleware>();
 
             app.MapControllers();
 

@@ -9,10 +9,17 @@ namespace TooliRent.Services.Mapping
         public ToolProfile()
         {
             CreateMap<Tool, ToolDto>()
-                .ForMember(d => d.Category, o => o.MapFrom(s => s.Category.Name));
+                .ForCtorParam("Category", o => o.MapFrom(s => s.Category.Name));
 
-            CreateMap<CreateToolDto, Tool>();
-            CreateMap<UpdateToolDto, Tool>();
+            CreateMap<CreateToolDto, Tool>()
+                .ForMember(d => d.Id, o => o.Ignore())
+                .ForMember(d => d.Category, o => o.Ignore())
+                .ForMember(d => d.Bookings, o => o.Ignore());
+
+            CreateMap<UpdateToolDto, Tool>()
+                .ForMember(d => d.Id, o => o.Ignore())
+                .ForMember(d => d.Category, o => o.Ignore())
+                .ForMember(d => d.Bookings, o => o.Ignore());
         }
     }
 }
