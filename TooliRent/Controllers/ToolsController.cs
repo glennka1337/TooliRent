@@ -21,9 +21,9 @@ namespace TooliRent.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ToolDto>>> Get([FromQuery] string? category, [FromQuery] bool? active)
+        public async Task<ActionResult<IEnumerable<ToolDto>>> Get([FromQuery] string? category, [FromQuery] bool? active, [FromQuery] bool? available)
         {
-            var tools = await _service.GetAsync(category, active);
+            var tools = await _service.GetAsync(category, active, available);
             return Ok(_mapper.Map<IEnumerable<ToolDto>>(tools));
         }
 

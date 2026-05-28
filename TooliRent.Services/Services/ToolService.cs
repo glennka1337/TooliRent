@@ -14,8 +14,8 @@ namespace TooliRent.Services.Services
             _categories = categories;
         }
 
-        public Task<IEnumerable<Tool>> GetAsync(string? category, bool? active) =>
-            _repo.GetAllAsync(category, active);
+        public Task<IEnumerable<Tool>> GetAsync(string? category, bool? active, bool? available = null) =>
+            _repo.GetAllAsync(category, active, available);
 
         public Task<Tool?> GetByIdAsync(int id) => _repo.GetByIdAsync(id);
 

@@ -6,5 +6,7 @@ namespace TooliRent.Services.Services
     {
         Task<AuthResultDto> RegisterAsync(RegisterDto dto);
         Task<AuthResultDto> LoginAsync(LoginDto dto);
+        Task<AuthResultDto> RefreshAsync(string refreshToken);
+        Task LogoutAsync(int userId);
     }
 }

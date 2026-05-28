@@ -13,5 +13,7 @@ namespace TooliRent.Core.Models
         public string Password { get; set; } = null!;
         public string Role { get; set; } = null!;
         public bool IsActive { get; set; } = true;
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryUtc { get; set; }
     }
 }

@@ -1,4 +1,4 @@
 namespace TooliRent.Services.DTOs
 {
-    public record AuthResultDto(string Token, DateTime ExpiresUtc, string Username, string Role);
+    public record AuthResultDto(string Token, DateTime ExpiresUtc, string Username, string Role, string RefreshToken, DateTime RefreshExpiresUtc);
 }

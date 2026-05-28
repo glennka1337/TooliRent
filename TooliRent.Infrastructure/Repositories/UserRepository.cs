@@ -16,6 +16,9 @@ namespace TooliRent.Infrastructure.Repositories
         public Task<User?> GetByIdAsync(int id) =>
             _ctx.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
+        public Task<User?> GetByRefreshTokenAsync(string refreshToken) =>
+            _ctx.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
         public async Task AddAsync(User user)
         {
             _ctx.Users.Add(user);

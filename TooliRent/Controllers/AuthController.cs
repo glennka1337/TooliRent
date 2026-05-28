@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TooliRent.Services.DTOs;
 using TooliRent.Services.Services;
 
@@ -23,6 +25,28 @@ namespace TooliRent.Controllers
         {
             var result = await _auth.LoginAsync(dto);
             return Ok(result);
+        }
+
+        [HttpPost("refresh")]
+        public async Task<ActionResult<AuthResultDto>> Refresh(RefreshRequestDto dto)
+        {
+            var result = await _auth.RefreshAsync(dto.RefreshToken);
+            return Ok(result);
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            var uid = User.FindFirst("uid")?.Value;
+            if (!int.TryParse(uid, out var id))
+            {
+                var nameId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!int.TryParse(nameId, out id)) return Forbid();
+            }
+
+            await _auth.LogoutAsync(id);
+            return NoContent();
         }
     }
 }

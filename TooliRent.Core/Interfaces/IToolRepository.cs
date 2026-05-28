@@ -4,7 +4,7 @@ namespace TooliRent.Core.Interfaces
 {
     public interface IToolRepository
     {
-        Task<IEnumerable<Tool>> GetAllAsync(string? category = null, bool? onlyActive = null);
+        Task<IEnumerable<Tool>> GetAllAsync(string? category = null, bool? onlyActive = null, bool? onlyAvailable = null);
         Task<Tool?> GetByIdAsync(int id);
         Task AddAsync(Tool tool);
         Task UpdateAsync(Tool tool);

@@ -16,10 +16,11 @@ namespace TooliRent.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Tool>> GetAllAsync(string? category = null, bool? onlyActive = null)
+        public async Task<IEnumerable<Tool>> GetAllAsync(string? category = null, bool? onlyActive = null, bool? onlyAvailable = null)
         {
             IQueryable<Tool> query = _context.Tools
                 .Include(t => t.Category)
+            .Include(t => t.Bookings)
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(category))
@@ -27,6 +28,19 @@ namespace TooliRent.Infrastructure.Repositories
 
             if (onlyActive.HasValue)
                 query = query.Where(t => t.IsActive == onlyActive.Value);
+
+            if (onlyAvailable.HasValue)
+            {
+                var now = DateTime.UtcNow;
+                if (onlyAvailable.Value)
+                {
+                    query = query.Where(t => !t.Bookings.Any(b => (b.Status == TooliRent.Core.Models.Enums.BookingStatus.Approved || b.Status == TooliRent.Core.Models.Enums.BookingStatus.PickedUp) && b.StartDate <= now && b.EndDate >= now));
+                }
+                else
+                {
+                    query = query.Where(t => t.Bookings.Any(b => (b.Status == TooliRent.Core.Models.Enums.BookingStatus.Approved || b.Status == TooliRent.Core.Models.Enums.BookingStatus.PickedUp) && b.StartDate <= now && b.EndDate >= now));
+                }
+            }
 
             return await query.ToListAsync();
         }

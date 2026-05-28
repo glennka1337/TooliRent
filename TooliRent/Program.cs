@@ -95,6 +95,8 @@ namespace TooliRent
             builder.Services.AddScoped<IToolService, ToolService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
             var app = builder.Build();
 

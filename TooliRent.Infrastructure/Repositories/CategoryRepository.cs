@@ -18,5 +18,25 @@ namespace TooliRent.Infrastructure.Repositories
 
         public async Task<IEnumerable<Category>> GetAllAsync() =>
             await _ctx.Categories.AsNoTracking().ToListAsync();
+
+        public async Task AddAsync(Category category)
+        {
+            await _ctx.Categories.AddAsync(category);
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Category category)
+        {
+            _ctx.Categories.Update(category);
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _ctx.Categories.FindAsync(id);
+            if (entity is null) return;
+            _ctx.Categories.Remove(entity);
+            await _ctx.SaveChangesAsync();
+        }
     }
 }

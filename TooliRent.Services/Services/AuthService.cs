@@ -33,7 +33,7 @@ namespace TooliRent.Services.Services
                 Role = "Member"
             };
             await _users.AddAsync(user);
-            return GenerateToken(user);
+            return await GenerateTokenAsync(user);
         }
 
         public async Task<AuthResultDto> LoginAsync(LoginDto dto)
@@ -42,10 +42,28 @@ namespace TooliRent.Services.Services
             if (user == null || !user.IsActive || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 throw new UnauthorizedAccessException("Invalid credentials.");
 
-            return GenerateToken(user);
+            return await GenerateTokenAsync(user);
         }
 
-        private AuthResultDto GenerateToken(User user)
+        public async Task<AuthResultDto> RefreshAsync(string refreshToken)
+        {
+            var user = await _users.GetByRefreshTokenAsync(refreshToken);
+            if (user == null) throw new UnauthorizedAccessException("Invalid refresh token.");
+            if (!user.RefreshTokenExpiryUtc.HasValue || user.RefreshTokenExpiryUtc.Value < DateTime.UtcNow)
+                throw new UnauthorizedAccessException("Refresh token expired.");
+
+            return await GenerateTokenAsync(user);
+        }
+
+        public async Task LogoutAsync(int userId)
+        {
+            var user = await _users.GetByIdAsync(userId) ?? throw new KeyNotFoundException("User not found.");
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryUtc = null;
+            await _users.UpdateAsync(user);
+        }
+
+        private async Task<AuthResultDto> GenerateTokenAsync(User user)
         {
             var jwtSection = _config.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!));
@@ -68,7 +86,14 @@ namespace TooliRent.Services.Services
                 signingCredentials: creds);
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-            return new AuthResultDto(tokenString, expires, user.Username, user.Role);
+            // create refresh token
+            var refresh = Guid.NewGuid().ToString("N");
+            var refreshExpiry = DateTime.UtcNow.AddDays(7);
+            user.RefreshToken = refresh;
+            user.RefreshTokenExpiryUtc = refreshExpiry;
+            await _users.UpdateAsync(user);
+
+            return new AuthResultDto(tokenString, expires, user.Username, user.Role, refresh, refreshExpiry);
         }
     }
 }
