@@ -1,27 +1,24 @@
-using Microsoft.EntityFrameworkCore;
-using TooliRent.Infrastructure.Data;
 using TooliRent.Services.DTOs;
+using TooliRent.Services.Services;
+using TooliRent.Core.Interfaces;
+using CoreBookingStatus = TooliRent.Core.Models.Enums.BookingStatus;
 
 namespace TooliRent.Services.Services
 {
     public class StatisticsService : IStatisticsService
     {
-        private readonly TooliRentDbContext _ctx;
-        public StatisticsService(TooliRentDbContext ctx) => _ctx = ctx;
+        private readonly IBookingRepository _bookings;
+        public StatisticsService(IBookingRepository bookings) => _bookings = bookings;
 
         public async Task<StatisticsDto> GetAsync()
         {
-            var total = await _ctx.Bookings.CountAsync();
-            var active = await _ctx.Bookings.CountAsync(b => b.Status == Core.Models.Enums.BookingStatus.Approved || b.Status == Core.Models.Enums.BookingStatus.PickedUp);
-            var overdue = await _ctx.Bookings.CountAsync(b => b.Status == Core.Models.Enums.BookingStatus.Overdue);
+            var total = await _bookings.CountAllAsync();
+            var active = await _bookings.CountByStatusAsync(CoreBookingStatus.Approved);
+            active += await _bookings.CountByStatusAsync(CoreBookingStatus.PickedUp);
+            var overdue = await _bookings.CountByStatusAsync(CoreBookingStatus.Overdue);
 
-            var top = await _ctx.Bookings
-                .Include(b => b.Tool)
-                .GroupBy(b => b.Tool.Name)
-                .Select(g => new ToolUsageDto(g.Key, g.Count()))
-                .OrderByDescending(t => t.UsageCount)
-                .Take(10)
-                .ToListAsync();
+            var topRaw = await _bookings.GetTopToolUsageAsync(10);
+            var top = topRaw.Select(t => new ToolUsageDto(t.ToolName, t.UsageCount));
 
             return new StatisticsDto(total, active, overdue, top);
         }

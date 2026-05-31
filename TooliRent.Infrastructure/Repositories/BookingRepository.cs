@@ -69,5 +69,22 @@ namespace TooliRent.Infrastructure.Repositories
 
             return affected;
         }
+
+        public Task<int> CountAllAsync() => _ctx.Bookings.CountAsync();
+
+        public Task<int> CountByStatusAsync(BookingStatus status) => _ctx.Bookings.CountAsync(b => b.Status == status);
+
+        public async Task<IEnumerable<(string ToolName, int UsageCount)>> GetTopToolUsageAsync(int topN)
+        {
+            var q = await _ctx.Bookings
+                .Include(b => b.Tool)
+                .GroupBy(b => b.Tool.Name)
+                .Select(g => new { ToolName = g.Key, UsageCount = g.Count() })
+                .OrderByDescending(x => x.UsageCount)
+                .Take(topN)
+                .ToListAsync();
+
+            return q.Select(x => (x.ToolName!, x.UsageCount));
+        }
     }
 }

@@ -12,5 +12,9 @@ namespace TooliRent.Core.Interfaces
         Task UpdateAsync(Booking booking);
         Task<bool> HasBlockingOverlapAsync(int toolId, DateTime start, DateTime end, int? excludeBookingId = null);
         Task<int> MarkOverdueAsync(DateTime utcNow);
+        // Additional stats queries
+        Task<int> CountAllAsync();
+        Task<int> CountByStatusAsync(BookingStatus status);
+        Task<IEnumerable<(string ToolName, int UsageCount)>> GetTopToolUsageAsync(int topN);
     }
 }
