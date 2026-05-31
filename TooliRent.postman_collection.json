@@ -1,0 +1,123 @@
+{
+  "info": {
+    "name": "TooliRent - Quick Collection",
+    "_postman_id": "tooli-rent-quick",
+    "description": "Minimal Postman collection for common TooliRent API flows.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:5001" },
+    { "key": "jwt", "value": "" },
+    { "key": "refresh", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\"username\":\"newuser\",\"password\":\"Pass#123\"}" }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\"username\":\"member\",\"password\":\"Member#123\"}" }
+          }
+        },
+        {
+          "name": "Refresh",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "body": { "mode": "raw", "raw": "{\"refreshToken\":\"{{refresh}}\"}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "item": [
+        {
+          "name": "List (optional filters)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/tools?category=Garden&available=true" }
+        },
+        { "name": "Get by id", "request": { "method": "GET", "url": "{{baseUrl}}/api/tools/1" } },
+        {
+          "name": "Create (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": "{{baseUrl}}/api/tools",
+            "body": { "mode": "raw", "raw": "{\"name\":\"Ny Verktyg\",\"description\":\"Beskrivning\",\"categoryId\":1,\"isActive\":true}" }
+          }
+        },
+        {
+          "name": "Update (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": "{{baseUrl}}/api/tools/1",
+            "body": { "mode": "raw", "raw": "{\"name\":\"Uppdaterat namn\",\"description\":\"...\",\"categoryId\":1,\"isActive\":true}" }
+          }
+        },
+        { "name": "Delete (Admin)", "request": { "method": "DELETE", "header": [{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/tools/1" } }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": "{{baseUrl}}/api/bookings",
+            "body": { "mode": "raw", "raw": "{\"toolIds\":[1],\"startDate\":\"2026-06-01T00:00:00Z\",\"endDate\":\"2026-06-03T00:00:00Z\"}" }
+          }
+        },
+        { "name": "Mine", "request": { "method": "GET", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/bookings/mine" } },
+        { "name": "Cancel", "request": { "method": "DELETE", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/bookings/1" } },
+        { "name": "Approve (Admin)", "request": { "method": "POST", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/bookings/1/approve" } },
+        { "name": "Pickup", "request": { "method": "POST", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/bookings/1/pickup" } },
+        { "name": "Return", "request": { "method": "POST", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/bookings/1/return" } },
+        { "name": "Sweep overdue (Admin)", "request": { "method": "POST", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/bookings/overdue/sweep" } }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/categories" } },
+        { "name": "Get", "request": { "method": "GET", "url": "{{baseUrl}}/api/categories/1" } },
+        { "name": "Create (Admin)", "request": { "method": "POST", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/categories", "body": { "mode":"raw","raw":"{\"name\":\"Ny kategori\"}" } } },
+        { "name": "Update (Admin)", "request": { "method": "PUT", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/categories/1", "body": { "mode":"raw","raw":"{\"name\":\"Uppdaterad\"}" } } },
+        { "name": "Delete (Admin)", "request": { "method": "DELETE", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/categories/1" } }
+      ]
+    },
+    {
+      "name": "Users (Admin)",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/users" } },
+        { "name": "Activate", "request": { "method": "POST", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/users/2/activate" } },
+        { "name": "Deactivate", "request": { "method": "POST", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/users/2/deactivate" } }
+      ]
+    },
+    { "name": "Statistics (Admin)", "request": { "method": "GET", "header":[{ "key":"Authorization","value":"Bearer {{jwt}}" }], "url": "{{baseUrl}}/api/statistics" } }
+  ]
+}

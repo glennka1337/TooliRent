@@ -1,4 +1,5 @@
 using System.Text;
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,6 +32,13 @@ namespace TooliRent
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TooliRent API", Version = "v1" });
+                try
+                {
+                    var xmlFile = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile!);
+                    if (File.Exists(xmlPath)) c.IncludeXmlComments(xmlPath);
+                }
+                catch {  }
                 var jwtScheme = new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
